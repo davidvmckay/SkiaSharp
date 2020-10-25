@@ -59,7 +59,7 @@ jobs:
           condition: ne('${{ parameters.packages }}', '')
 
       # make sure mono/msbuild is the correct version
-      - ${{ if and(eq(parameters.docker, ''), endsWith(parameters.name, '_linux')) }}:
+      - ${{ if and(ne(variables['MONO_VERSION_LINUX'], ''), eq(parameters.docker, ''), endsWith(parameters.name, '_linux')) }}:
         - bash: |
             sudo apt remove -y mono-complete msbuild
             sudo apt autoremove -y
@@ -128,6 +128,8 @@ jobs:
                 .\scripts\download-file.ps1 -Uri $uri -OutFile sdksetup.exe
                 .\sdksetup.exe /norestart /quiet | Out-Null
               displayName: Install the Windows 10 SDK 10.0.10240
+          - pwsh: ./scripts/install-vs.ps1
+            displayName: Install the Visual Studio Components
 
       # install any .NET Core global tools
       - ${{ each tool in parameters.tools }}:
